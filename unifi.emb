@@ -1,0 +1,39 @@
+-- UniFi packet definitions.
+
+[$default byte_order: "BigEndian"]
+[(cpp) namespace: "unifi"]
+
+
+enum PacketType:
+  -- Packet type.
+  HARDWARE_ADDRESS = 0x01
+  IP_INFO          = 0x02
+  FIRMWARE_VERSION = 0x03
+  USERNAME         = 0x06
+  SALT             = 0x07
+  RANDOM_CHALLENGE = 0x08
+  CHALLENGE        = 0x09
+  UPTIME           = 0x0a
+  HOSTNAME         = 0x0b  # Always 'ubnt' for an unadopted AP.
+  PLATFORM         = 0x0c
+  ESSID            = 0x0d
+  WMODE            = 0x0e
+  WEBUI            = 0x0f
+  MODEL            = 0x14
+
+
+struct Inform:
+  -- Inform packet.
+  0  [+4]               UInt      magic
+  4  [+4]               UInt      packet_version
+  8  [+6]               UInt:8[]  mac_address
+  14 [+2]  bits:
+    1  [+1]             Flag      encrypted
+    2  [+1]             Flag      compressed
+    4  [+1]             Flag      snappy
+    8  [+1]             Flag      aes_gcm
+
+  16 [+16]              UInt:8[]  encryption_iv
+  32 [+4]               UInt      data_version
+  36 [+4]               UInt      payload_length
+  40 [+payload_length]  UInt:8[]  payload
